@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineVerse - Movie Discovery Platform</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: linear-gradient(135deg, #000428 0%, #004e92 100%);
+        }
+
+        /* Dark mode toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+        }
+
+        .theme-toggle input {
+            display: none;
+        }
+
+        .theme-toggle label {
+            background: #1a1a2e;
+            color: #4fc3f7;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid #4fc3f7;
+        }
+
+        .theme-toggle label:hover {
+            background: #4fc3f7;
+            color: #000;
+        }
+
+        /* Dark mode styles */
+        body:has(.theme-toggle input:checked) {
+            background: linear-gradient(135deg, #0f0f23 0%, #16213e 100%);
+            color: #e0e0e0;
+        }
+
+        body:has(.theme-toggle input:checked) .navbar {
+            background: rgba(15, 15, 35, 0.95);
+        }
+
+        body:has(.theme-toggle input:checked) .card {
+            background: rgba(15, 15, 35, 0.9);
+            color: #e0e0e0;
+        }
+
+        body:has(.theme-toggle input:checked) .review-card {
+            background: rgba(15, 15, 35, 0.9);
+            color: #e0e0e0;
+        }
+
+        body:has(.theme-toggle input:checked) .form-container {
+            background: rgba(15, 15, 35, 0.9);
+        }
+
+        body:has(.theme-toggle input:checked) .footer {
+            background: rgba(15, 15, 35, 0.95);
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #4fc3f7;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4fc3f7;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #4fc3f7;
+            transform: translateY(-2px);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #4fc3f7;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 4px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: #4fc3f7;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        .menu-toggle:checked ~ .nav-links {
+            right: 0;
+        }
+
+        .menu-toggle:checked ~ .hamburger span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle:checked ~ .hamburger span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle:checked ~ .hamburger span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            margin-top: 80px;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-text {
+            flex: 1;
+            padding-right: 2rem;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            text-shadow: 0 0 20px #4fc3f7;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            color: #000;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 195, 247, 0.3);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(79, 195, 247, 0.5);
+            background: linear-gradient(45deg, #29b6f6, #4fc3f7);
+        }
+
+        .hero-svg {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .animated-svg {
+            width: 400px;
+            height: 400px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .film-reel {
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Sections */
+        .section {
+            padding: 80px 5%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            text-shadow: 0 0 15px #4fc3f7;
+        }
+
+        .section-title p {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            opacity: 0.8;
+        }
+
+        /* Cards */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(79, 195, 247, 0.2);
+            border-color: #4fc3f7;
+        }
+
+        .card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            margin-bottom: 0.5rem;
+            color: #ffffff;
+        }
+
+        .card-content p {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .duration {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #4fc3f7;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid #4fc3f7;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-actions {
+            opacity: 1;
+        }
+
+        .watch-btn {
+            background: #4fc3f7;
+            color: #000;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .watch-btn:hover {
+            background: #29b6f6;
+            transform: scale(1.05);
+        }
+
+        .watchlist-btn {
+            background: transparent;
+            border: 2px solid #4fc3f7;
+            color: #4fc3f7;
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .watchlist-btn:hover {
+            background: #4fc3f7;
+            color: #000;
+        }
+
+        /* Modal */
+        .modal-toggle {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-toggle:checked ~ .modal {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            color: #ffffff;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            border: 2px solid #4fc3f7;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #4fc3f7;
+        }
+
+        .modal-close:hover {
+            color: #29b6f6;
+        }
+
+        /* Reviews Section */
+        .reviews-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+
+        .review-card {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1rem;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            object-fit: cover;
+            border: 2px solid #4fc3f7;
+        }
+
+        .review-name {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .review-text {
+            color: #b0b0b0;
+            font-style: italic;
+        }
+
+        .stars {
+            color: #4fc3f7;
+            margin-top: 0.5rem;
+        }
+
+        /* Form */
+        .form-container {
+            background: rgba(26, 26, 46, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .form-container h3 {
+            color: #4fc3f7;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #4fc3f7;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            background: rgba(0, 0, 0, 0.3);
+            color: #ffffff;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #29b6f6;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #b0b0b0;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #4fc3f7, #29b6f6);
+            color: #000;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 195, 247, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(26, 26, 46, 0.95);
+            color: white;
+            padding: 3rem 5%;
+            text-align: center;
+            border-top: 1px solid #4fc3f7;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            margin-bottom: 1rem;
+            color: #4fc3f7;
+        }
+
+        .footer-section a {
+            color: #e0e0e0;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .footer-section a:hover {
+            color: #4fc3f7;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .social-icons a {
+            width: 40px;
+            height: 40px;
+            background: #4fc3f7;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            background: #29b6f6;
+            transform: translateY(-3px);
+        }
+
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4fc3f7;
+            color: #000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            font-weight: bold;
+        }
+
+        .back-to-top:hover {
+            background: #29b6f6;
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                position: fixed;
+                top: 80px;
+                right: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: rgba(26, 26, 46, 0.98);
+                flex-direction: column;
+                align-items: center;
+                padding-top: 2rem;
+                transition: right 0.3s ease;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .hero-text {
+                padding-right: 0;
+                margin-bottom: 2rem;
+            }
+
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+
+            .animated-svg {
+                width: 300px;
+                height: 300px;
+            }
+
+            .reviews-section {
+                grid-template-columns: 1fr;
+            }
+
+            .cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 2rem;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .animated-svg {
+                width: 250px;
+                height: 250px;
+            }
+
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    </head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <input type="checkbox" id="theme-switch">
+        <label for="theme-switch">🌙 Dark Mode</label>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="#" class="logo">🎬 CineVerse</a>
+        <input type="checkbox" id="menu-toggle" class="menu-toggle">
+        <div class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#trending">Trending</a></li>
+            <li><a href="#shows">Shows</a></li>
+            <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>CineVerse</h1>
+                <p>Discover amazing movies and TV shows from around the world. Your ultimate entertainment destination.</p>
+                <a href="#trending" class="cta-btn">Explore Trending Movies</a>
+            </div>
+            <div class="hero-svg">
+                <svg class="animated-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle class="film-reel" cx="100" cy="100" r="80" fill="none" stroke="#fff" stroke-width="4"/>
+                    <circle class="film-reel" cx="100" cy="100" r="60" fill="none" stroke="#fff" stroke-width="2"/>
+                    <circle class="film-reel" cx="100" cy="100" r="40" fill="none" stroke="#fff" stroke-width="2"/>
+                    <circle cx="100" cy="100" r="20" fill="#fff"/>
+                    <circle cx="100" cy="60" r="8" fill="#fff"/>
+                    <circle cx="100" cy="140" r="8" fill="#fff"/>
+                    <circle cx="60" cy="100" r="8" fill="#fff"/>
+                    <circle cx="140" cy="100" r="8" fill="#fff"/>
+                    <circle cx="75" cy="75" r="6" fill="#fff"/>
+                    <circle cx="125" cy="75" r="6" fill="#fff"/>
+                    <circle cx="75" cy="125" r="6" fill="#fff"/>
+                    <circle cx="125" cy="125" r="6" fill="#fff"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trending Movies Section -->
+    <section id="trending" class="section">
+        <div class="section-title">
+            <h2>Trending Movies</h2>
+            <p>The hottest movies everyone's talking about</p>
+        </div>
+        <div class="cards-container">
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=1" alt="Avatar 2">
+                <div class="duration">3h 12m</div>
+                <div class="card-content">
+                    <h3>Avatar: The Way of Water</h3>
+                    <p>Jake Sully and Neytiri have formed a family and are doing everything to stay together...</p>
+                    <div class="card-actions">
+                        <a href="https://www.disney.com/movies/avatar-the-way-of-water" class="watch-btn" target="_blank">Watch Now</a>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=2" alt="Top Gun Maverick">
+                <div class="duration">2h 17m</div>
+                <div class="card-content">
+                    <h3>Top Gun: Maverick</h3>
+                    <p>After more than thirty years of service, Pete Mitchell is still pushing the envelope...</p>
+                    <div class="card-actions">
+                        <a href="https://www.paramountmovies.com/movies/top-gun-maverick" class="watch-btn" target="_blank">Watch Now</a>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=3" alt="Black Panther">
+                <div class="duration">2h 41m</div>
+                <div class="card-content">
+                    <h3>Black Panther: Wakanda Forever</h3>
+                    <p>Queen Ramonda, Shuri, M'Baku, Okoye and the Dora Milaje fight to protect their nation...</p>
+                    <div class="card-actions">
+                        <a href="https://www.marvel.com/movies/black-panther-wakanda-forever" class="watch-btn" target="_blank">Watch Now</a>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=4" alt="The Batman">
+                <div class="duration">2h 56m</div>
+                <div class="card-content">
+                    <h3>The Batman</h3>
+                    <p>When a sadistic serial killer begins murdering key political figures in Gotham...</p>
+                    <div class="card-actions">
+                        <a href="https://www.warnerbros.com/movies/batman" class="watch-btn" target="_blank">Watch Now</a>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Shows Section -->
+    <section id="shows" class="section">
+        <div class="section-title">
+            <h2>Popular Shows</h2>
+            <p>Binge-worthy series you can't miss</p>
+        </div>
+        <div class="cards-container">
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=5" alt="Stranger Things">
+                <div class="card-content">
+                    <h3>Stranger Things</h3>
+                    <p>Sci-Fi, Drama • 4 Seasons • 42 Episodes</p>
+                    <p>When a young boy vanishes, a small town uncovers a mystery involving secret experiments...</p>
+                    <div class="card-actions">
+                        <input type="checkbox" id="modal1" class="modal-toggle">
+                        <label for="modal1" class="watch-btn">Learn More</label>
+                        <div class="modal">
+                            <div class="modal-content">
+                                <label for="modal1" class="modal-close">&times;</label>
+                                <h3>Stranger Things</h3>
+                                <p><strong>Genre:</strong> Sci-Fi, Drama, Horror</p>
+                                <p><strong>Seasons:</strong> 4</p>
+                                <p><strong>Episodes:</strong> 42</p>
+                                <p><strong>Synopsis:</strong> Set in the 1980s, the series centers around the residents of the fictional small town of Hawkins, Indiana, as they are plagued by a hostile alternate dimension known as the Upside Down.</p>
+                                <a href="https://www.netflix.com/title/80057281" class="watch-btn" target="_blank">Watch Now</a>
+                            </div>
+                        </div>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=6" alt="The Crown">
+                <div class="card-content">
+                    <h3>The Crown</h3>
+                    <p>Drama, Biography • 6 Seasons • 60 Episodes</p>
+                    <p>Follows the political rivalries and romance of Queen Elizabeth II's reign...</p>
+                    <div class="card-actions">
+                        <input type="checkbox" id="modal2" class="modal-toggle">
+                        <label for="modal2" class="watch-btn">Learn More</label>
+                        <div class="modal">
+                            <div class="modal-content">
+                                <label for="modal2" class="modal-close">&times;</label>
+                                <h3>The Crown</h3>
+                                <p><strong>Genre:</strong> Drama, Biography, History</p>
+                                <p><strong>Seasons:</strong> 6</p>
+                                <p><strong>Episodes:</strong> 60</p>
+                                <p><strong>Synopsis:</strong> This drama follows the political rivalries and romance of Queen Elizabeth II's reign and the events that shaped the second half of the 20th century.</p>
+                                <a href="https://www.netflix.com/title/80025678" class="watch-btn" target="_blank">Watch Now</a>
+                            </div>
+                        </div>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <img src="https://picsum.photos/300/200?random=7" alt="Wednesday">
+                <div class="card-content">
+                    <h3>Wednesday</h3>
+                    <p>Comedy, Horror • 1 Season • 8 Episodes</p>
+                    <p>Wednesday Addams is sent to Nevermore Academy, a supernatural boarding school...</p>
+                    <div class="card-actions">
+                        <input type="checkbox" id="modal3" class="modal-toggle">
+                        <label for="modal3" class="watch-btn">Learn More</label>
+                        <div class="modal">
+                            <div class="modal-content">
+                                <label for="modal3" class="modal-close">&times;</label>
+                                <h3>Wednesday</h3>
+                                <p><strong>Genre:</strong> Comedy, Horror, Mystery</p>
+                                <p><strong>Seasons:</strong> 1</p>
+                                <p><strong>Episodes:</strong> 8</p>
+                                <p><strong>Synopsis:</strong> A sleuthing, supernaturally infused mystery charting Wednesday Addams' years as a student at Nevermore Academy.</p>
+                                <a href="https://www.netflix.com/title/81231974" class="watch-btn" target="_blank">Watch Now</a>
+                            </div>
+                        </div>
+                        <button class="watchlist-btn" onclick="toggleWatchlist(this)">+</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Reviews Section -->
+    <section id="reviews" class="section">
+        <div class="section-title">
+            <h2>User Reviews</h2>
+            <p>What our community is saying</p>
+        </div>
+        <div class="reviews-section">
+            <div class="reviews-container">
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://via.placeholder.com/50x50/667eea/fff?text=AJ" alt="Alex Johnson" class="review-avatar">
+                        <div>
+                            <div class="review-name">Alex Johnson</div>
+                            <div class="stars">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        "Amazing platform! The movie recommendations are spot-on and the interface is so user-friendly. I've discovered so many great films here!"
+                    </div>
+                </div>
+                                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://via.placeholder.com/50x50/764ba2/fff?text=SM" alt="Sarah Miller" class="review-avatar">
+                        <div>
+                            <div class="review-name">Sarah Miller</div>
+                            <div class="stars">⭐⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        "Love the dark mode feature! Perfect for late-night movie browsing. The trending section always has the latest releases."
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-header">
+                        <img src="https://via.placeholder.com/50x50/4ecdc4/fff?text=MR" alt="Mike Rodriguez" class="review-avatar">
+                        <div>
+                            <div class="review-name">Mike Rodriguez</div>
+                            <div class="stars">⭐⭐⭐⭐</div>
+                        </div>
+                    </div>
+                    <div class="review-text">
+                        "Great collection of movies and shows. The watchlist feature is really handy for keeping track of what I want to watch next."
+                    </div>
+                </div>
+            </div>
+            <div class="form-container">
+                <h3>Share Your Review</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="review">Your Review</label>
+                        <textarea id="review" name="review" rows="4" placeholder="Tell us what you think about our platform..." required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contact">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>CineVerse</h3>
+                <p>Your ultimate destination for discovering amazing movies and TV shows from around the world.</p>
+                <div class="social-icons">
+                    <a href="https://facebook.com" target="_blank" title="Facebook">📘</a>
+                    <a href="https://twitter.com" target="_blank" title="Twitter">🐦</a>
+                    <a href="https://instagram.com" target="_blank" title="Instagram">📷</a>
+                    <a href="https://youtube.com" target="_blank" title="YouTube">📺</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="#home">Home</a>
+                <a href="#trending">Trending Movies</a>
+                <a href="#shows">Popular Shows</a>
+                <a href="#reviews">Reviews</a>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <a href="https://www.termsfeed.com/terms-conditions/" target="_blank">Terms & Conditions</a>
+                <a href="https://www.termsfeed.com/privacy-policy/" target="_blank">Privacy Policy</a>
+                <a href="https://www.termsfeed.com/cookies-policy/" target="_blank">Cookie Policy</a>
+                <a href="https://support.google.com" target="_blank">Support</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 info@cineverse.com</p>
+                <p>📞 +1 (555) 123-4567</p>
+                <p>📍 123 Movie Street, Film City, CA 90210</p>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #444;">
+            <p>&copy; 2025 CineVerse. All rights reserved. Made with ❤️ for movie lovers.</p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#home" class="back-to-top" title="Back to Top">↑</a>
+
+    <script>
+        // Watchlist toggle functionality
+        function toggleWatchlist(button) {
+            if (button.innerHTML === '+') {
+                button.innerHTML = '✓';
+                button.style.background = '#4CAF50';
+                button.style.borderColor = '#4CAF50';
+                button.style.color = 'white';
+            } else {
+                button.innerHTML = '+';
+                button.style.background = 'transparent';
+                button.style.borderColor = '#667eea';
+                button.style.color = '#667eea';
+            }
+        }
+
+        // Hamburger menu functionality
+        document.getElementById('menu-toggle').addEventListener('change', function() {
+            const navLinks = document.querySelector('.nav-links');
+            if (this.checked) {
+                navLinks.style.right = '0';
+            } else {
+                navLinks.style.right = '-100%';
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('menu-toggle').checked = false;
+                document.querySelector('.nav-links').style.right = '-100%';
+            });
+        });
+
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Show/hide back to top button
+        window.addEventListener('scroll', function() {
+            const backToTop = document.querySelector('.back-to-top');
+            if (window.pageYOffset > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+
+        // Form submission (just for demo - shows alert)
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for your review! (This is just a demo - form is not actually submitted)');
+            this.reset();
+        });
+
+        // Add some interactive hover effects
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-switch');
+        const body = document.body;
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        if (currentTheme === 'dark') {
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>
+
+
+
+
